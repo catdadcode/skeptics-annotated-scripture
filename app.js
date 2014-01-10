@@ -44,7 +44,49 @@ simpledb.init(process.env.CONNECTION_STRING || "mongodb://localhost/sas", functi
         res.render('index', { title: 'Express' });
     });
 
-    app.get('/sas/:tomeName/:bookName?/:verseSyntax?', function (req, res) {
+    app.get('/api/sas/tomes', function (req, res) {
+        db.Tome.find(function (err, tomes) {
+            if (err) return console.error(err);
+            res.send(tomes);
+        });
+    });
+
+    app.get('/api/sas/:tomeName/books', function (req, res) {
+        var tomeName = req.param('tomeName').toLowerCase().replace(/ /g, '-');
+        db.Book.find({ tomeName: tomeName }, function (err, books) {
+            if (err) return console.error(err);
+            res.send(books);
+        });
+    });
+
+    app.get('/api/sas/:tomeName/:bookName/chapters', function (req, res) {
+        var tomeName = req.param('tomeName').toLowerCase().replace(/ /g, '-'),
+            bookName = req.param('bookName').toLowerCase().replace(/ /g, '-');
+
+        db.Chapter.find({ tomeName: tomeName, bookName: bookName }, function (err, chapters) {
+           if (err) return console.error(err);
+          res.send(chapters);
+        });
+    }); 
+
+    app.get(/^\/api\/(?:category|categories)\/?(.+)?$/i, function (req, res) {
+        console.log(req.params[0]);
+        var categoryName = req.params[0];
+        if (categoryName) {
+            categoryName = categoryName.toLowerCase().replace(/ /g, '-');
+            db.Category.findOne({ urlName: categoryName }, function (err, category) {
+                if (err) return console.error(err);
+                if (category) res.send(category);
+                else res.send("No categories called \"" + categoryName + "\".");
+            });
+        } else
+            db.Category.find({}, function (err, categories) {
+                if (err) return console.error(err);
+                res.send(categories);
+            });
+    });
+
+    app.get('/api/sas/:tomeName/:bookName?/:verseSyntax?', function (req, res) {
         var tomeName = req.param('tomeName').toLowerCase().replace(/ /g, '-'),
             bookName = req.param('bookName'),
             verseSyntax = req.param('verseSyntax'),
@@ -93,29 +135,11 @@ simpledb.init(process.env.CONNECTION_STRING || "mongodb://localhost/sas", functi
         // Get verse(s).
         db.Verse.find(query, function (err, verses) {
             if (err) return console.error(err);
-            console.log(tomeName + " - " + bookName + " " + chapterNumber + ":", verseNumbers); 
             if (verses.length > 0)
                 res.send(verses);
             else
                 res.send("No verses found.");
         });
-    });
-
-    app.get(/^\/(?:category|categories)\/?(.+)?$/i, function (req, res) {
-        console.log(req.params[0]);
-        var categoryName = req.params[0];
-        if (categoryName) {
-            categoryName = categoryName.toLowerCase().replace(/ /g, '-');
-            db.Category.findOne({ urlName: categoryName }, function (err, category) {
-                if (err) return console.error(err);
-                if (category) res.send(category);
-                else res.send("No categories called \"" + categoryName + "\".");
-            });
-        } else
-            db.Category.find({}, function (err, categories) {
-                if (err) return console.error(err);
-                res.send(categories);
-            });
     });
 
     http.createServer(app).listen(app.get('port'), function(){

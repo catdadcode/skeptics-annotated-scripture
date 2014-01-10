@@ -5,11 +5,11 @@ var fs = require('fs'),
 // Initialize simpledb.
 simpledb.init({ connectionString: 'mongodb://localhost/sas' }, function (err, db) {
     if (err) return console.error(err);
-    db.Category.find({}, function (err, categories) {
+    db.Chapter.find(function (err, chapters) {
         if (err) return console.error(err);
-        categories.forEach(function (category) {
-            category.urlName = category.name.toLowerCase().replace(/ /g, '-');
-            category.save(function (err) {
+        chapters.forEach(function (chapter) {
+            chapter.bookName = chapter.bookName.toLowerCase().replace(/ /g, '-');
+            chapter.save(function (err) {
                 if (err) return console.error(err);
             });
         });

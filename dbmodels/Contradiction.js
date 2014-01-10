@@ -1,3 +1,4 @@
 exports.schema = {
-    question: String
+    question: String,
+    comments: String
 };

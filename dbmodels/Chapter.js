@@ -4,5 +4,7 @@ exports.schema = {
     index: Number,
     description: String,
     book: { type: ObjectId, ref: 'Book' },
-    bookName: String
+    bookName: String,
+    tome: { type: ObjectId, ref: 'Tome' },
+    tomeName: String
 };

@@ -4,5 +4,6 @@ exports.schema = {
     name: String,
     urlName: String,
     index: Number,
-    tome: { type: ObjectId, ref: 'Tome' }
+    tome: { type: ObjectId, ref: 'Tome' },
+    tomeName: String
 };
