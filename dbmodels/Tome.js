@@ -1,5 +1,5 @@
 exports.schema = {
+    index: Number,
     name: String,
-    translation: String,
-    index: Number
+    urlName: String
 };

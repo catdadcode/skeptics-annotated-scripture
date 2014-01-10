@@ -1,15 +1,18 @@
 var fs = require('fs'),
-    file = __dirname + '/jsonfiles/verses.json',
-    json;
+    file = __dirname + '/jsonfiles/annotations.json',
+    simpledb = require('mongoose-simpledb');
 
-fs.readFile(file, 'utf8', function (err, data) {
+// Initialize simpledb.
+simpledb.init({ connectionString: 'mongodb://localhost/sas' }, function (err, db) {
     if (err) return console.error(err);
-    data = data.replace('\r','').replace('\n', '');
-    json = JSON.parse(data.substr(2).slice(0, -4));
-
-    //for (var index = 0; index < json.length; index++) {
-        //var item = json[index];
-        //console.log(item);
-    /*}*/
-});
+    db.Category.find({}, function (err, categories) {
+        if (err) return console.error(err);
+        categories.forEach(function (category) {
+            category.urlName = category.name.toLowerCase().replace(/ /g, '-');
+            category.save(function (err) {
+                if (err) return console.error(err);
+            });
+        });
+    });
+}); // Initialize simpledb.
 
