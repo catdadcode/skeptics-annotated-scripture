@@ -5,10 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/home');
+var apiRoutes = require('./routes/api');
 var simpledb = require('mongoose-simpledb');
 
 simpledb.init('mongodb://temp:password@ds030817.mongolab.com:30817/sascripture', function (db) {
-//simpledb.init(function (db) {
 
     var app = express();
 
@@ -24,6 +24,7 @@ simpledb.init('mongodb://temp:password@ds030817.mongolab.com:30817/sascripture',
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use('/', routes);
+    app.use('/api', apiRoutes);
 
     /// catch 404 and forward to error handler
     app.use(function(req, res, next) {
