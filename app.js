@@ -7,7 +7,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/home');
 var simpledb = require('mongoose-simpledb');
 
-simpledb.init('mongodb://temp:temp@ds030817.mongolab.com:30817/sascripture', function (db) {
+simpledb.init('mongodb://temp:password@ds030817.mongolab.com:30817/sascripture', function (db) {
+//simpledb.init(function (db) {
 
     var app = express();
 
