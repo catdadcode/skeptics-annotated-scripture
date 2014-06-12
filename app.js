@@ -8,57 +8,62 @@ var routes = require('./routes/home');
 var apiRoutes = require('./routes/api');
 var simpledb = require('mongoose-simpledb');
 
-simpledb.init('mongodb://temp:password@ds030817.mongolab.com:30817/sascripture', function (db) {
+// Initialize express.
+var app = express();
 
-    var app = express();
+// Initialize simpledb.
+simpledb.init('mongodb://temp:password@ds030817.mongolab.com:30817/sascripture', function () {
+    console.log("Database models loaded.");
+});
 
-    // view engine setup
-    app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-    app.use(favicon());
-    app.use(logger('dev'));
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded());
-    app.use(cookieParser());
-    app.use(express.static(path.join(__dirname, 'public')));
+// Middleware
+app.use(favicon());
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-    app.use('/', routes);
-    app.use('/api', apiRoutes);
+// Routing
+app.use('/', routes);
+app.use('/api', apiRoutes);
 
-    /// catch 404 and forward to error handler
-    app.use(function(req, res, next) {
-        var err = new Error('Not Found');
-        err.status = 404;
-        next(err);
-    });
+/// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
 
-    /// error handlers
+/// error handlers
 
-    // development error handler
-    // will print stacktrace
-    if (app.get('env') === 'development') {
-        app.use(function(err, req, res, next) {
-            res.status(err.status || 500);
-            res.render('error', {
-                message: err.message,
-                error: err
-            });
-        });
-    }
-
-    // production error handler
-    // no stacktraces leaked to user
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
-            error: {}
+            error: err
         });
     });
+}
 
-    app.listen(3000, function () {
-        console.log("App is listening at http://localhost:3000");
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
     });
+});
 
+// Start the web server.
+app.listen(3000, function () {
+    console.log("App is listening at http://localhost:3000");
 });
