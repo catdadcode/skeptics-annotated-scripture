@@ -13,7 +13,6 @@ exports.schema = {
 
 exports.methods = {
     simplify: function (short, callback) {
-        console.log(arguments);
         var doc = this;
         if (short) {
             var json = {

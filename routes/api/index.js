@@ -1,7 +1,5 @@
 var router = require('express').Router();
 
-// Friendly queries.
-
 // Get all scripture tomes from the db.
 router.get('/tomes', require('./tomes'));
 

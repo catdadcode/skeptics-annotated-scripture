@@ -89,23 +89,37 @@ module.exports = function (req, res) {
         if (err) return console.error(err);
         db.Annotation.find({ verses: { $in: verses } }, function (err, annotations) {
             if (err) return console.error(err);
-            var result = {
+            var json = {
                 verses: [],
                 annotations: []
             };
-            // TODO: do same to verses as to annotations.
-            if (verses.length > 0)
-                result.verses = verses;
 
-            var jobs = [];
+            var jobs = {};
+
+            var simplifyVerses = [];
+            verses.forEach(function (verse) {
+                simplifyVerses.push(function (cb) {
+                    verse.simplify(false, cb);
+                });
+            });
+            jobs.verses = function (cb) {
+                async.parallel(simplifyVerses, cb);
+            };
+
+            var simplifyAnnotations = [];
             annotations.forEach(function (annotation) {
-                jobs.push(function (cb) {
+                simplifyAnnotations.push(function (cb) {
                     annotation.simplify(false, cb);
                 });
             });
-            async.parallel(jobs, function (err, annotations) {
+            jobs.annotations = function (cb) {
+                async.parallel(simplifyAnnotations, cb);
+            };
+
+            async.parallel(jobs, function (err, result) {
                 if (err) return console.error(err);
-                result.annotations = annotations;
+                json.annotations = result.annotations;
+                json.verses = result.verses;
                 res.send(result);
             });
         });

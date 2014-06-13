@@ -1,4 +1,5 @@
 var db = require('mongoose-simpledb').db;
+var async = require('async');
 
 // Get all chapters in the specified tome & book.
 module.exports = function (req, res) {
@@ -7,6 +8,15 @@ module.exports = function (req, res) {
 
     db.Chapter.find({ tomeName: tomeName, bookName: bookName }, function (err, chapters) {
        if (err) return console.error(err);
-      res.send(chapters);
+       var simplifyChapters = [];
+       chapters.forEach(function (chapter) {
+           simplifyChapters.push(function (cb) {
+               chapter.simplify(false, cb);
+           });
+       });
+       async.parallel(simplifyChapters, function (err, chapters) {
+           if (err) return console.error(err);
+           res.send(chapters);
+       });
     });
 }; 

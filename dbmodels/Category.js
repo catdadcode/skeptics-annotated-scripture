@@ -10,14 +10,14 @@ exports.methods = {
         var doc = this;
         if (short) {
             var json = {
-                urlName: doc.urlName,
-                icon: doc.icon
+                name: doc.urlName,
+                icon: 'images/category-icons/' + doc.icon
             };
             callback(null, json);
         } else {
             var json = {
-                name: doc.name,
-                urlName: doc.urlName,
+                expandedName: doc.name,
+                name: doc.urlName,
                 icon: doc.icon,
                 description: doc.description
             };
